@@ -1,0 +1,5 @@
+auto threadFunction = [&resource, &mutex, report](int threadID, unsigned int){
+	while(resource < 10){
+		std::cout << "stuffs" << std::endl;
+	}
+}
