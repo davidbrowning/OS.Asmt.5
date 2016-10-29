@@ -228,7 +228,7 @@ unsigned long long piDigitHex(unsigned long long n)
 	return x;
 }
 
-int main()
+/*int main()
 {
 	for (int digit = 1; digit <= 1000; digit++)
 	{
@@ -246,4 +246,4 @@ int main()
 	//std::cout << std::hex << piDigitHex(4) << std::endl;
 
 	return 0;
-}
+}*/
