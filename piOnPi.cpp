@@ -1,39 +1,69 @@
-#includ <iostream>
-#include <thread>
-#include <mutex>
-#include <chrono>
-#include <cstdlib>
+#include<iostream>
+#include<queue>
+#include<fstream>
+#include<mutex>
+#include<thread>
+#include<cstdlib>
+#include<chrono>
+#include<utility>
+#include<unordered_map>
 
-int calculateDigitofPi(int dig, std::mutex& mutex)
-{
+#include "ComputePiDigit.cpp"
+
+int getNext(std::mutex& mutex, std::queue<int>& q){
 	std::lock_guard<std::mutex> lock(mutex);
-	int pi [11] = {3,1,4,1,5,9,2,6,5,3,5};
-	return pi[dig];
+	int task = q.front();
+	q.pop();
+	return task;
 }
 
 
-void threadStart(int threadId, std::mutex& mutex)
-{
-	for (int value = 0; value < 4; value++)
-	{
-		std::cout << "Thread: " << threadId;
-		std::cout << " Value: " << calculateDigitofPi(value, mutex) << std::endl;
+void recordAns(std::unordered_map<int, int>& um, int task, int answer){
+//This is going to work because of the hash table idea
+	um.insert({task, answer});
+	return;
+}
+
+void threadStart(int id, std::mutex &m, std::queue<int>& q, std::unordered_map<int, int>& um){
+	while(!q.empty()){
+	int task;
+	//std::cout << "id: " << id << std::endl;
+	//std::cout.flush();
+	task = getNext(m, q);
+	int ans;
+	//std::cout << "task: " << task << std::endl;
+	//std::cout.flush();
+	std::cout << '.';
+	std::cout.flush();
+	ans = computePiDigit(task);
+	recordAns(um, task, ans);
+	//std::cout << "ans: " << ans << std::endl;
+	//std::cout.flush();
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }
 
-
-int main()
-{
-	srand(time(NULL));
-
+int main(){
+	std::ofstream fout;
+	fout.open("qtest.txt");
+	std::queue<int> q;
+	for(int i = 1; i < 1000; i++){
+		q.push(i);
+	}
+	std::unordered_map<int, int> um;
 	std::mutex mutex;
-
-	std::thread thread1(threadStart, 1, std::ref(mutex));
-	std::thread thread2(threadStart, 2, std::ref(mutex));
-
+	std::thread thread1(threadStart, 1, std::ref(mutex), std::ref(q), std::ref(um));
+	std::thread thread2(threadStart, 2, std::ref(mutex), std::ref(q), std::ref(um));
+	
 	thread1.join();
 	thread2.join();
-
-	return 0;
+	
+	std::cout << "\n\n3.";
+	//*
+	for (unsigned i = 0; i < um.bucket_count(); ++i) {
+		for (auto local_it = um.begin(i); local_it!= um.end(i); ++local_it){
+		      std::cout << local_it->second;
+		}
+	}//*credit to http://www.cplusplus.com/reference/unordered_map/unordered_map/begin/ for this idea ^
+	std::cout << std::endl;
 }
-
