@@ -52,11 +52,16 @@ int main(){
 	}
 	std::unordered_map<int, int> um;
 	std::mutex mutex;
-	std::thread thread1(threadStart, 1, std::ref(mutex), std::ref(q), std::ref(um));
+	auto t = std::thread::hardware_concurrency();
+	for(int i = 0; i < t; i++){
+		std::thread thr(threadStart, i, std::ref(mutex), std::ref(q), std::ref(um));
+		thr.join();
+	}
+	/*std::thread thread1(threadStart, 1, std::ref(mutex), std::ref(q), std::ref(um));
 	std::thread thread2(threadStart, 2, std::ref(mutex), std::ref(q), std::ref(um));
 	
 	thread1.join();
-	thread2.join();
+	thread2.join();*/
 	
 	std::cout << "\n\n3.";
 	//*
