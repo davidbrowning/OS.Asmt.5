@@ -8,7 +8,7 @@
 #include<utility>
 #include<unordered_map>
 
-#include "ComputePiDigit.cpp"
+#include "computePiDigit.hpp"
 
 int getNext(std::mutex& mutex, std::queue<int>& q){
 	std::lock_guard<std::mutex> lock(mutex);
@@ -46,7 +46,7 @@ void threadStart(int id, std::mutex &m, std::queue<int>& q, std::unordered_map<i
 
 int main(){
 	std::ofstream fout;
-	fout.open("qtest.txt");
+	//fout.open("qtest.txt");
 	std::queue<int> q;
 	for(int i = 1; i < 1001; i++){ //If I'm starting at 1 I have to end at 1001
 		q.push(i);
@@ -112,11 +112,9 @@ int main(){
 	//thread2.join();
 	
 	std::cout << "\n\n3.";
-	//*
-	for (unsigned i = 0; i < um.bucket_count(); ++i) {
-		for (auto local_it = um.begin(i); local_it!= um.end(i); ++local_it){
-		      std::cout << local_it->second;
-		}
-	}//*credit to http://www.cplusplus.com/reference/unordered_map/unordered_map/begin/ for this idea ^
+	for (int j = 1; j < 1001; j++) {
+		std::cout << um.at(j);
+	}
 	std::cout << std::endl;
+
 }
